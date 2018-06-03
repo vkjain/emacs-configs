@@ -68,8 +68,6 @@ and dragging Emacs to the Applications folder.
 Release 26 is definitely a refinement release. 
 
 
-Can we add another image here.
-![my new image](/Users/vasantkj/documentation/emacs1.png)
 
 
 [Xcode]:(https://itunes.apple.com/us/app/xcode/id497799835)
