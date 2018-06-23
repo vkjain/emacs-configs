@@ -18,7 +18,7 @@
 ;;--------------------------------------------------
 
 ;; (org-babel-load-file (expand-file-name "~/.emacs.d/myinit.org"))
-;; (setq org-element-use-cache nil)
+(setq org-element-use-cache nil)
 ;; ---------------------
 
 ;; set keys for Apple keyboard, for emacs in OS X
