@@ -75,7 +75,19 @@
  '(org-startup-indented t)
  '(package-selected-packages
    (quote
-    (pcre2el treemacs-projectile treemacs origami dumb-jump jedi-core elfeed-org elfeed-goodies elfeed shell-switcher better-shell atomic-chrome wgrep-ag wgrep auctex noflet beacon org-pdfview pdf-tools all-the-icons-dired neotree shell-pop git-timemachine git-gutter default-text-scale smartparens iedit hungry-delete yasnippet-snippets virtualenvwrapper htmlize ox-reveal irony-eldoc company-irony zerodark-theme alect-themes moe-theme base16-theme color-theme-modern try zenburn whole-line-or-region which-key web-mode use-package undo-tree sphinx-frontend smex smart-mode-line powerline plantuml-mode paredit-everywhere ox-twbs ox-rst ov org-web-tools org-present org-elisp-help org-ehtml org-easy-img-insert org-download org-cliplink org-bullets org-bookmark-heading org-beautify-theme org-autolist org-ac orca multiple-cursors multi-term material-theme markdown-mode magit lorem-ipsum key-chord ido-vertical-mode ido-ubiquitous hydra helm-projectile helm-helm-commands helm-gtags helm-delicious helm-dash helm-ag go-snippets go-eldoc geiser expand-region ess-smart-underscore ess-R-object-popup emmet-mode elpy elisp-slime-nav ein-mumamo counsel company-jedi cider bug-hunter better-defaults auto-yasnippet auto-complete-rst aggressive-indent ace-window)))
+    ( treemacs-projectile treemacs origami dumb-jump jedi-core elfeed-org elfeed-goodies elfeed shell-switcher 
+	     better-shell atomic-chrome wgrep-ag wgrep auctex noflet beacon org-pdfview pdf-tools all-the-icons-dired 
+	     neotree shell-pop git-timemachine git-gutter default-text-scale smartparens iedit hungry-delete 
+	     yasnippet-snippets virtualenvwrapper htmlize ox-reveal irony-eldoc company-irony zerodark-theme 
+	     alect-themes moe-theme base16-theme color-theme-modern try zenburn whole-line-or-region which-key web-mode 
+	     use-package undo-tree sphinx-frontend smex smart-mode-line powerline plantuml-mode paredit-everywhere 
+	     ox-twbs ox-rst ov org-web-tools org-present org-elisp-help org-ehtml org-easy-img-insert org-download 
+	     org-cliplink org-bullets org-bookmark-heading org-beautify-theme org-autolist org-ac orca multiple-cursors 
+	     multi-term material-theme markdown-mode magit lorem-ipsum key-chord ido-vertical-mode ido-ubiquitous 
+	     hydra helm-projectile helm-helm-commands helm-gtags helm-delicious helm-dash helm-ag go-snippets go-eldoc 
+	     geiser expand-region ess-smart-underscore ess-R-object-popup emmet-mode elpy elisp-slime-nav ein-mumamo 
+	     counsel company-jedi cider bug-hunter better-defaults auto-yasnippet auto-complete-rst aggressive-indent 
+	     ace-window)))
  '(tool-bar-mode nil))
 
             ;; (setq org-file-apps
