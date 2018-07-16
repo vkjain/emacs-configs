@@ -38,6 +38,10 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 (global-set-key (kbd "<f5>") 'revert-buffer)
 
+
+;; setting environment variable for emacs
+(setenv "PATH" (concat "/usr/local/bin/python3:" (getenv "PATH")))
+
 ;;try
 (use-package try
 	:ensure t)
@@ -59,14 +63,26 @@
         :config
         (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
 
+;; set maximum indentation for description lists
+(setq org-list-description-max-indent 5)
+
+;; prevent demoting heading also shifting text inside sections
+(setq org-adapt-indentation nil)
+
             
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   (quote
+    ("2a998a3b66a0a6068bcb8b53cd3b519d230dd1527b07232e54c8b9d84061d48d" "99c86852decaeb0c6f51ce8bd46e4906a4f28ab4c5b201bdc3fdf85b24f88518" default)))
  '(display-time-mode t)
+ '(elpy-rpc-python-command "/usr/local/bin/python3")
  '(elpy-syntax-check-command "/usr/local/bin/flake8")
+ '(graphviz-dot-dot-program "/usr/local/bin/dot")
+ '(org-babel-no-eval-on-ctrl-c-ctrl-c nil)
  '(org-default-notes-file (concat org-directory "/notes.org"))
  '(org-directory "~/Dropbox/orgfiles")
  '(org-export-html-postamble nil)
@@ -75,19 +91,8 @@
  '(org-startup-indented t)
  '(package-selected-packages
    (quote
-    ( treemacs-projectile treemacs origami dumb-jump jedi-core elfeed-org elfeed-goodies elfeed shell-switcher 
-	     better-shell atomic-chrome wgrep-ag wgrep auctex noflet beacon org-pdfview pdf-tools all-the-icons-dired 
-	     neotree shell-pop git-timemachine git-gutter default-text-scale smartparens iedit hungry-delete 
-	     yasnippet-snippets virtualenvwrapper htmlize ox-reveal irony-eldoc company-irony zerodark-theme 
-	     alect-themes moe-theme base16-theme color-theme-modern try zenburn whole-line-or-region which-key web-mode 
-	     use-package undo-tree sphinx-frontend smex smart-mode-line powerline plantuml-mode paredit-everywhere 
-	     ox-twbs ox-rst ov org-web-tools org-present org-elisp-help org-ehtml org-easy-img-insert org-download 
-	     org-cliplink org-bullets org-bookmark-heading org-beautify-theme org-autolist org-ac orca multiple-cursors 
-	     multi-term material-theme markdown-mode magit lorem-ipsum key-chord ido-vertical-mode ido-ubiquitous 
-	     hydra helm-projectile helm-helm-commands helm-gtags helm-delicious helm-dash helm-ag go-snippets go-eldoc 
-	     geiser expand-region ess-smart-underscore ess-R-object-popup emmet-mode elpy elisp-slime-nav ein-mumamo 
-	     counsel company-jedi cider bug-hunter better-defaults auto-yasnippet auto-complete-rst aggressive-indent 
-	     ace-window)))
+    (graphviz-dot-mode worf dired+ helpful jedi treemacs-projectile treemacs origami dumb-jump jedi-core elfeed-org elfeed-goodies elfeed shell-switcher better-shell atomic-chrome wgrep-ag wgrep auctex noflet beacon org-pdfview pdf-tools all-the-icons-dired neotree shell-pop git-timemachine git-gutter default-text-scale smartparens iedit hungry-delete yasnippet-snippets virtualenvwrapper htmlize ox-reveal irony-eldoc company-irony zerodark-theme alect-themes moe-theme base16-theme color-theme-modern try zenburn whole-line-or-region which-key web-mode use-package undo-tree sphinx-frontend smex smart-mode-line powerline plantuml-mode paredit-everywhere ox-twbs ox-rst ov org-web-tools org-present org-elisp-help org-ehtml org-easy-img-insert org-download org-cliplink org-bullets org-bookmark-heading org-beautify-theme org-autolist org-ac orca multiple-cursors multi-term material-theme markdown-mode magit lorem-ipsum key-chord ido-vertical-mode ido-ubiquitous hydra helm-projectile helm-helm-commands helm-gtags helm-delicious helm-dash helm-ag go-snippets go-eldoc geiser expand-region ess-smart-underscore ess-R-object-popup emmet-mode elpy elisp-slime-nav ein-mumamo counsel company-jedi cider bug-hunter better-defaults auto-yasnippet auto-complete-rst aggressive-indent ace-window)))
+ '(python-shell-buffer-name "/usr/local/bin/ipython")
  '(tool-bar-mode nil))
 
             ;; (setq org-file-apps
@@ -342,9 +347,14 @@
   (global-flycheck-mode t))
 
 ;; Python
-(setq py-python-command "python3")
-(setq python-shell-interpreter "python3")
+(setq py-python-command "/usr/local/bin/ipython")
+(setq python-shell-interpreter "/usr/local/bin/ipython")
  
+(use-package jedi
+  :ensure t
+  :init
+  (add-hook 'python-mode-hook 'jedi:setup)
+  (add-hook 'python-mode-hook 'jedi:ac-setup))
 
 (use-package elpy
   :ensure t
@@ -469,23 +479,26 @@ narrowed."
       (tex-send-command "evince" (tex-append tex-print-file ".pdf")))
 ;; babel stuff
 
+
+
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((python . t)
      (emacs-lisp . t)
      (C . t)
-  (js . t)
+     (js . t)
      (ditaa . t)
      (dot . t)
      (org . t)
-         (shell . t )
-  (latex . t )
-     ))
-;; projectile
-  (use-package projectile
-    :ensure t
-    :config
-    (projectile-global-mode)
+     (shell . t )
+;;  ((looking-at )tex . t )
+  ))
+
+;; (point)rojectile
+(use-package projectile
+  :ensure t
+  :config
+  (projectile-global-mode)
   (setq projectile-completion-system 'ivy))
 
   ;; (use-package counsel-projectile
@@ -1017,6 +1030,28 @@ directory to make multiple eshell windows easier."
 
 (setq auto-window-vscroll nil)
 
+(load-file "~/.emacs.d/elpa/dired+.el")
+
+
+;; entering comment boxes
+(defun bjm-comment-box (b e)
+"Draw a box comment around the region but arrange for the region
+to extend to at least the fill column. Place the point after the
+comment box."
+
+(interactive "r")
+
+(let ((e (copy-marker e t)))
+  (goto-char b)
+  (end-of-line)
+  (insert-char ?  (- fill-column (current-column)))
+  (comment-box b e 1)
+  (goto-char e)
+  (set-marker e nil)))
+
+(global-set-key (kbd "C-c b b") 'bjm-comment-box)
+
+
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -1024,3 +1059,49 @@ directory to make multiple eshell windows easier."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(aw-leading-char-face ((t (:inherit ace-jump-face-foreground :height 3.0)))))
+
+;; aliases, maybe we don't need all of them. Remove ones which we don't need
+
+(defalias 'qrr 'query-replace-regexp)
+(defalias 'lml 'list-matching-lines)
+(defalias 'dml 'delete-matching-lines)
+(defalias 'dnml 'delete-non-matching-lines)
+(defalias 'dtw 'delete-trailing-whitespace)
+(defalias 'sl 'sort-lines)
+(defalias 'rr 'reverse-region)
+(defalias 'rs 'replace-string)
+
+(defalias 'g 'grep)
+(defalias 'gf 'grep-find)
+(defalias 'fd 'find-dired)
+
+(defalias 'rb 'revert-buffer)
+
+(defalias 'sh 'shell)
+(defalias 'fb 'flyspell-buffer)
+(defalias 'sbc 'set-background-color)
+(defalias 'rof 'recentf-open-files)
+(defalias 'lcd 'list-colors-display)
+(defalias 'cc 'calc)
+
+; elisp
+(defalias 'eb 'eval-buffer)
+(defalias 'er 'eval-region)
+(defalias 'ed 'eval-defun)
+(defalias 'eis 'elisp-index-search)
+(defalias 'lf 'load-file)
+
+; major modes
+(defalias 'hm 'html-mode)
+(defalias 'tm 'text-mode)
+(defalias 'elm 'emacs-lisp-mode)
+(defalias 'om 'org-mode)
+(defalias 'ssm 'shell-script-mode)
+
+; minor modes
+(defalias 'wsm 'whitespace-mode)
+(defalias 'gwsm 'global-whitespace-mode)
+(defalias 'vlm 'visual-line-mode)
+(defalias 'glm 'global-linum-mode)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
