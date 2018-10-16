@@ -1,0 +1,14 @@
+elpa
+auto-save-list
+*~
+\#*
+site-lisp/*
+using-emacs/*
+lib/*
+lisp/*
+indent-guide/*
+obsolete/*
+markdown-mode/*
+markdown_image_files/*
+,cache/*
+.cask/*

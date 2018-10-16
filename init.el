@@ -1,5 +1,6 @@
 
 (require 'package)
+
 (setq package-enable-at-startup nil)
 (add-to-list 'package-archives
 	     '("melpa" . "http://melpa.org/packages/"))
@@ -15,10 +16,47 @@
 	(package-refresh-contents)
 	(package-install 'use-package))
 
+(eval-and-compile
+  (defvar use-package-verbose t)
+  (require 'cl)
+  (require 'use-package)
+  (require 'bind-key)
+  (require 'diminish))
+;;  (setq use-package-always-ensure t))
+
+(setq auto-fill-mode t) ;; great when you type long lines. they fold themselves
+
+;; Backup files
+(setq backup-directory-alist
+      `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms
+      `((".*"  ,temporary-file-directory t)))
 ;;--------------------------------------------------
+
+
+
+
+;; easy way to reload my configuration when I change it. Bind it to <f11>
+(defun vas/reload-init()
+  "Reloads the init file"
+  (interactive)
+  (load-file "~/.emacs.d/init.el"))
+
+
+
+
+;;; Commentary ;
 
 ;; (org-babel-load-file (expand-file-name "~/.emacs.d/myinit.org"))
 (setq org-element-use-cache nil)
+(setq org-indent-mode t) ;; this aligns below headers properly
+;; set up tikz as one of the default packages for LateX
+(setq org-latex-packages-alist
+      (quote (("" "color" t)
+	      ("" "minted" t)
+	      ("" "parskip" t)
+	      ("" "tikz" t))))
+
 ;; ---------------------
 
 ;; set keys for Apple keyboard, for emacs in OS X
@@ -347,9 +385,12 @@
   (global-flycheck-mode t))
 
 ;; Python
+
 (setq py-python-command "/usr/local/bin/ipython")
-(setq python-shell-interpreter "/usr/local/bin/ipython")
- 
+;; (setenv "IPY_TEST_SIMPLE_PROMPT" "1")
+(setq python-shell-interpreter "/usr/local/bin/ipython3")
+;;      python-shell-interpreter-args "-i")
+
 (use-package jedi
   :ensure t
   :init
@@ -360,6 +401,10 @@
   :ensure t
   :config 
   (elpy-enable))
+
+
+(setq elpy-rpc-python-command "/usr/local/bin/ipython3")
+
 
 (use-package virtualenvwrapper
   :ensure t
@@ -1105,3 +1150,191 @@ comment box."
 (defalias 'glm 'global-linum-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; setting up latex mode
+;; Forward/inverse search with evince using D-bus.
+;; Installation:
+;; M-x package-install RET auctex RET
+;; Tells emacs where to find LaTeX.
+(let ((my-path (expand-file-name "/usr/local/bin:/usr/local/texlive/2018basic/bin/x86_64-darwin")))
+(setenv "PATH" (concat my-path ":" (getenv "PATH")))
+(add-to-list 'exec-path my-path)) 
+
+;; AucTeX settings
+(setq TeX-PDF-mode t)
+
+(add-hook 'LaTeX-mode-hook
+(lambda ()
+  (push
+   '("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t
+     :help "Run latexmk on file")
+    TeX-command-list)))
+(add-hook 'TeX-mode-hook '(lambda () (setq TeX-command-default "latexmk")))
+
+(setq TeX-view-program-selection '((output-pdf "PDF Viewer")))
+(setq TeX-view-program-list
+      '(("PDF Viewer" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b")))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+ 
+;; ;;; Fira code
+;; ;; This works when using emacs --daemon + emacsclient
+;; (add-hook 'after-make-frame-functions (lambda (frame) (set-fontset-font t '(#Xe100 . #Xe16f) "Fira Code Symbol")))
+;; ;; This works when using emacs without server/client
+;; (set-fontset-font t '(#Xe100 . #Xe16f) "Fira Code Symbol")
+;; ;; I haven't found one statement that makes both of the above situations work, so I use both for now
+
+;; (defconst fira-code-font-lock-keywords-alist
+;;   (mapcar (lambda (regex-char-pair)
+;;             `(,(car regex-char-pair)
+;;               (0 (prog1 ()
+;;                    (compose-region (match-beginning 1)
+;;                                    (match-end 1)
+;;                                    ;; The first argument to concat is a string containing a literal tab
+;;                                    ,(concat "	" (list (decode-char 'ucs (cadr regex-char-pair)))))))))
+;;           '(("\\(www\\)"                   #Xe100)
+;;             ("[^/]\\(\\*\\*\\)[^/]"        #Xe101)
+;;             ("\\(\\*\\*\\*\\)"             #Xe102)
+;;             ("\\(\\*\\*/\\)"               #Xe103)
+;;             ("\\(\\*>\\)"                  #Xe104)
+;;             ("[^*]\\(\\*/\\)"              #Xe105)
+;;             ("\\(\\\\\\\\\\)"              #Xe106)
+;;             ("\\(\\\\\\\\\\\\\\)"          #Xe107)
+;;             ("\\({-\\)"                    #Xe108)
+;;             ("\\(\\[\\]\\)"                #Xe109)
+;;             ("\\(::\\)"                    #Xe10a)
+;;             ("\\(:::\\)"                   #Xe10b)
+;;             ("[^=]\\(:=\\)"                #Xe10c)
+;;             ("\\(!!\\)"                    #Xe10d)
+;;             ("\\(!=\\)"                    #Xe10e)
+;;             ("\\(!==\\)"                   #Xe10f)
+;;             ("\\(-}\\)"                    #Xe110)
+;;             ("\\(--\\)"                    #Xe111)
+;;             ("\\(---\\)"                   #Xe112)
+;;             ("\\(-->\\)"                   #Xe113)
+;;             ("[^-]\\(->\\)"                #Xe114)
+;;             ("\\(->>\\)"                   #Xe115)
+;;             ("\\(-<\\)"                    #Xe116)
+;;             ("\\(-<<\\)"                   #Xe117)
+;;             ("\\(-~\\)"                    #Xe118)
+;;             ("\\(#{\\)"                    #Xe119)
+;;             ("\\(#\\[\\)"                  #Xe11a)
+;;             ("\\(##\\)"                    #Xe11b)
+;;             ("\\(###\\)"                   #Xe11c)
+;;             ("\\(####\\)"                  #Xe11d)
+;;             ("\\(#(\\)"                    #Xe11e)
+;;             ("\\(#\\?\\)"                  #Xe11f)
+;;             ("\\(#_\\)"                    #Xe120)
+;;             ("\\(#_(\\)"                   #Xe121)
+;;             ("\\(\\.-\\)"                  #Xe122)
+;;             ("\\(\\.=\\)"                  #Xe123)
+;;             ("\\(\\.\\.\\)"                #Xe124)
+;;             ("\\(\\.\\.<\\)"               #Xe125)
+;;             ("\\(\\.\\.\\.\\)"             #Xe126)
+;;             ("\\(\\?=\\)"                  #Xe127)
+;;             ("\\(\\?\\?\\)"                #Xe128)
+;;             ("\\(;;\\)"                    #Xe129)
+;;             ("\\(/\\*\\)"                  #Xe12a)
+;;             ("\\(/\\*\\*\\)"               #Xe12b)
+;;             ("\\(/=\\)"                    #Xe12c)
+;;             ("\\(/==\\)"                   #Xe12d)
+;;             ("\\(/>\\)"                    #Xe12e)
+;;             ("\\(//\\)"                    #Xe12f)
+;;             ("\\(///\\)"                   #Xe130)
+;;             ("\\(&&\\)"                    #Xe131)
+;;             ("\\(||\\)"                    #Xe132)
+;;             ("\\(||=\\)"                   #Xe133)
+;;             ("[^|]\\(|=\\)"                #Xe134)
+;;             ("\\(|>\\)"                    #Xe135)
+;;             ("\\(\\^=\\)"                  #Xe136)
+;;             ("\\(\\$>\\)"                  #Xe137)
+;;             ("\\(\\+\\+\\)"                #Xe138)
+;;             ("\\(\\+\\+\\+\\)"             #Xe139)
+;;             ("\\(\\+>\\)"                  #Xe13a)
+;;             ("\\(=:=\\)"                   #Xe13b)
+;;             ("[^!/]\\(==\\)[^>]"           #Xe13c)
+;;             ("\\(===\\)"                   #Xe13d)
+;;             ("\\(==>\\)"                   #Xe13e)
+;;             ("[^=]\\(=>\\)"                #Xe13f)
+;;             ("\\(=>>\\)"                   #Xe140)
+;;             ("\\(<=\\)"                    #Xe141)
+;;             ("\\(=<<\\)"                   #Xe142)
+;;             ("\\(=/=\\)"                   #Xe143)
+;;             ("\\(>-\\)"                    #Xe144)
+;;             ("\\(>=\\)"                    #Xe145)
+;;             ("\\(>=>\\)"                   #Xe146)
+;;             ("[^-=]\\(>>\\)"               #Xe147)
+;;             ("\\(>>-\\)"                   #Xe148)
+;;             ("\\(>>=\\)"                   #Xe149)
+;;             ("\\(>>>\\)"                   #Xe14a)
+;;             ("\\(<\\*\\)"                  #Xe14b)
+;;             ("\\(<\\*>\\)"                 #Xe14c)
+;;             ("\\(<|\\)"                    #Xe14d)
+;;             ("\\(<|>\\)"                   #Xe14e)
+;;             ("\\(<\\$\\)"                  #Xe14f)
+;;             ("\\(<\\$>\\)"                 #Xe150)
+;;             ("\\(<!--\\)"                  #Xe151)
+;;             ("\\(<-\\)"                    #Xe152)
+;;             ("\\(<--\\)"                   #Xe153)
+;;             ("\\(<->\\)"                   #Xe154)
+;;             ("\\(<\\+\\)"                  #Xe155)
+;;             ("\\(<\\+>\\)"                 #Xe156)
+;;             ("\\(<=\\)"                    #Xe157)
+;;             ("\\(<==\\)"                   #Xe158)
+;;             ("\\(<=>\\)"                   #Xe159)
+;;             ("\\(<=<\\)"                   #Xe15a)
+;;             ("\\(<>\\)"                    #Xe15b)
+;;             ("[^-=]\\(<<\\)"               #Xe15c)
+;;             ("\\(<<-\\)"                   #Xe15d)
+;;             ("\\(<<=\\)"                   #Xe15e)
+;;             ("\\(<<<\\)"                   #Xe15f)
+;;             ("\\(<~\\)"                    #Xe160)
+;;             ("\\(<~~\\)"                   #Xe161)
+;;             ("\\(</\\)"                    #Xe162)
+;;             ("\\(</>\\)"                   #Xe163)
+;;             ("\\(~@\\)"                    #Xe164)
+;;             ("\\(~-\\)"                    #Xe165)
+;;             ("\\(~=\\)"                    #Xe166)
+;;             ("\\(~>\\)"                    #Xe167)
+;;             ("[^<]\\(~~\\)"                #Xe168)
+;;             ("\\(~~>\\)"                   #Xe169)
+;;             ("\\(%%\\)"                    #Xe16a)
+;;            ;; ("\\(x\\)"                   #Xe16b) This ended up being hard to do properly so i'm leaving it out.
+;;             ("[^:=]\\(:\\)[^:=]"           #Xe16c)
+;;             ("[^\\+<>]\\(\\+\\)[^\\+<>]"   #Xe16d)
+;;             ("[^\\*/<>]\\(\\*\\)[^\\*/<>]" #Xe16f))))
+
+;; (defun add-fira-code-symbol-keywords ()
+;;   (font-lock-add-keywords nil fira-code-font-lock-keywords-alist))
+
+;; (add-hook 'prog-mode-hook
+;;           #'add-fira-code-symbol-keywords)
+;; ;;On some systems, == will appear incorrectly as a blank space in
+;; ;;certain modes unless you add the following lines to your init file:
+
+(set-language-environment "UTF-8")
+(set-default-coding-systems 'utf-8)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(setenv "PDFLATEX" "pdflatex --shell-escape") 
+
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(elpy-rpc-python-command "/usr/local/bin/python3")
+ '(elpy-syntax-check-command "/usr/local/bin/flake8")
+ '(flycheck-flake8rc "~/.config/flake8")
+ '(flycheck-python-flake8-executable "/usr/local/bin/flake8")
+ '(package-selected-packages
+   (quote
+    (company-anaconda flymake-python-pyflakes flycheck zerodark-theme zenburn yasnippet-snippets worf whole-line-or-region which-key wgrep-ag web-mode visual-regexp-steroids virtualenvwrapper use-package undo-tree try treemacs-projectile sphinx-frontend smex smartparens smart-mode-line shell-switcher shell-pop py-autopep8 plantuml-mode paredit-everywhere ox-twbs ox-rst ox-reveal ov origami org-web-tools org-present org-pdfview org-elisp-help org-ehtml org-easy-img-insert org-download org-cliplink org-bullets org-bookmark-heading org-beautify-theme org-autolist org-ac orca neotree multiple-cursors multi-term moe-theme material-theme markdown-mode lorem-ipsum key-chord jedi irony-eldoc iedit ido-vertical-mode ido-ubiquitous hungry-delete htmlize helpful helm-projectile helm-helm-commands helm-gtags helm-delicious helm-dash helm-ag graphviz-dot-mode go-snippets go-eldoc git-timemachine git-gutter geiser expand-region ess-smart-underscore ess-R-object-popup epkg emmet-mode elpy elisp-slime-nav elfeed-org elfeed-goodies ein-mumamo dumb-jump diminish default-text-scale counsel company-jedi company-irony color-theme-modern cider chicken-scheme bug-hunter better-shell better-defaults beacon base16-theme auto-yasnippet auto-highlight-symbol auto-complete-rst auctex-latexmk atomic-chrome all-the-icons-dired alect-themes aggressive-indent)))
+ '(python-shell-interpreter "/usr/local/bin/ipython3"))
+
