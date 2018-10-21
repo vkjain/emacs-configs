@@ -34,6 +34,26 @@
 ;;--------------------------------------------------
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; some basic settings
+(setq-default cursor-type 'bar)
+(set-cursor-color "#BE81f7")
+
+;; Fringe settings
+(fringe-mode '(8 . 0)) ;; органичиталь текста только слева
+(setq-default indicate-buffer-boundaries 'left)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Use M-x load-library RET realgud RET to load RealGUD
+
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; extensible, modular emacs front-end for interacting
+;; with external debuggers by Bernstein and Clement
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 ;; easy way to reload my configuration when I change it. Bind it to <f11>
@@ -119,6 +139,8 @@
  '(display-time-mode t)
  '(elpy-rpc-python-command "/usr/local/bin/python3")
  '(elpy-syntax-check-command "/usr/local/bin/flake8")
+ '(flycheck-flake8rc "~/.config/flake8")
+ '(flycheck-python-flake8-executable "/usr/local/bin/flake8")
  '(graphviz-dot-dot-program "/usr/local/bin/dot")
  '(org-babel-no-eval-on-ctrl-c-ctrl-c nil)
  '(org-default-notes-file (concat org-directory "/notes.org"))
@@ -129,8 +151,9 @@
  '(org-startup-indented t)
  '(package-selected-packages
    (quote
-    (graphviz-dot-mode worf dired+ helpful jedi treemacs-projectile treemacs origami dumb-jump jedi-core elfeed-org elfeed-goodies elfeed shell-switcher better-shell atomic-chrome wgrep-ag wgrep auctex noflet beacon org-pdfview pdf-tools all-the-icons-dired neotree shell-pop git-timemachine git-gutter default-text-scale smartparens iedit hungry-delete yasnippet-snippets virtualenvwrapper htmlize ox-reveal irony-eldoc company-irony zerodark-theme alect-themes moe-theme base16-theme color-theme-modern try zenburn whole-line-or-region which-key web-mode use-package undo-tree sphinx-frontend smex smart-mode-line powerline plantuml-mode paredit-everywhere ox-twbs ox-rst ov org-web-tools org-present org-elisp-help org-ehtml org-easy-img-insert org-download org-cliplink org-bullets org-bookmark-heading org-beautify-theme org-autolist org-ac orca multiple-cursors multi-term material-theme markdown-mode magit lorem-ipsum key-chord ido-vertical-mode ido-ubiquitous hydra helm-projectile helm-helm-commands helm-gtags helm-delicious helm-dash helm-ag go-snippets go-eldoc geiser expand-region ess-smart-underscore ess-R-object-popup emmet-mode elpy elisp-slime-nav ein-mumamo counsel company-jedi cider bug-hunter better-defaults auto-yasnippet auto-complete-rst aggressive-indent ace-window)))
+    (realgud company-anaconda flymake-python-pyflakes flycheck zerodark-theme zenburn yasnippet-snippets worf whole-line-or-region which-key wgrep-ag web-mode visual-regexp-steroids virtualenvwrapper use-package undo-tree try treemacs-projectile sphinx-frontend smex smartparens smart-mode-line shell-switcher shell-pop py-autopep8 plantuml-mode paredit-everywhere ox-twbs ox-rst ox-reveal ov origami org-web-tools org-present org-pdfview org-elisp-help org-ehtml org-easy-img-insert org-download org-cliplink org-bullets org-bookmark-heading org-beautify-theme org-autolist org-ac orca neotree multiple-cursors multi-term moe-theme material-theme markdown-mode lorem-ipsum key-chord jedi irony-eldoc iedit ido-vertical-mode ido-ubiquitous hungry-delete htmlize helpful helm-projectile helm-helm-commands helm-gtags helm-delicious helm-dash helm-ag graphviz-dot-mode go-snippets go-eldoc git-timemachine git-gutter geiser expand-region ess-smart-underscore ess-R-object-popup epkg emmet-mode elpy elisp-slime-nav elfeed-org elfeed-goodies ein-mumamo dumb-jump diminish default-text-scale counsel company-jedi company-irony color-theme-modern cider chicken-scheme bug-hunter better-shell better-defaults beacon base16-theme auto-yasnippet auto-highlight-symbol auto-complete-rst auctex-latexmk atomic-chrome all-the-icons-dired alect-themes aggressive-indent)))
  '(python-shell-buffer-name "/usr/local/bin/ipython")
+ '(python-shell-interpreter "/usr/local/bin/ipython3")
  '(tool-bar-mode nil))
 
             ;; (setq org-file-apps
@@ -388,7 +411,8 @@
 
 (setq py-python-command "/usr/local/bin/ipython")
 ;; (setenv "IPY_TEST_SIMPLE_PROMPT" "1")
-(setq python-shell-interpreter "/usr/local/bin/ipython3")
+(setq python-shell-interpreter "/usr/local/bin/ipython3"
+      python-shell-interpreter-args "-i")
 ;;      python-shell-interpreter-args "-i")
 
 (use-package jedi
@@ -1321,20 +1345,28 @@ comment box."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(setenv "PDFLATEX" "pdflatex --shell-escape") 
+(setenv "PDFLATEX" "pdflatex --shell-escape")
 
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(elpy-rpc-python-command "/usr/local/bin/python3")
- '(elpy-syntax-check-command "/usr/local/bin/flake8")
- '(flycheck-flake8rc "~/.config/flake8")
- '(flycheck-python-flake8-executable "/usr/local/bin/flake8")
- '(package-selected-packages
-   (quote
-    (company-anaconda flymake-python-pyflakes flycheck zerodark-theme zenburn yasnippet-snippets worf whole-line-or-region which-key wgrep-ag web-mode visual-regexp-steroids virtualenvwrapper use-package undo-tree try treemacs-projectile sphinx-frontend smex smartparens smart-mode-line shell-switcher shell-pop py-autopep8 plantuml-mode paredit-everywhere ox-twbs ox-rst ox-reveal ov origami org-web-tools org-present org-pdfview org-elisp-help org-ehtml org-easy-img-insert org-download org-cliplink org-bullets org-bookmark-heading org-beautify-theme org-autolist org-ac orca neotree multiple-cursors multi-term moe-theme material-theme markdown-mode lorem-ipsum key-chord jedi irony-eldoc iedit ido-vertical-mode ido-ubiquitous hungry-delete htmlize helpful helm-projectile helm-helm-commands helm-gtags helm-delicious helm-dash helm-ag graphviz-dot-mode go-snippets go-eldoc git-timemachine git-gutter geiser expand-region ess-smart-underscore ess-R-object-popup epkg emmet-mode elpy elisp-slime-nav elfeed-org elfeed-goodies ein-mumamo dumb-jump diminish default-text-scale counsel company-jedi company-irony color-theme-modern cider chicken-scheme bug-hunter better-shell better-defaults beacon base16-theme auto-yasnippet auto-highlight-symbol auto-complete-rst auctex-latexmk atomic-chrome all-the-icons-dired alect-themes aggressive-indent)))
- '(python-shell-interpreter "/usr/local/bin/ipython3"))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; scrolling command line history using shell via emacs
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(add-hook 'shell-mode-hook
+	  (lambda()
+	    (define-key shell-mode-map (kbd "<M-up>") 'comint-previous-input)
+	    (define-key shell-mode-map (kbd "<M-down>") 'comint-next-input)
+	    ))
+
+;; addresing path problem for shell
+(add-to-list 'exec-path "/bin")
+
+
+
+	    
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; checking out realgud integration with debuggers
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(load-library "~/.emacs.d/elpa/realgud-20180925.10/realgud")
 
