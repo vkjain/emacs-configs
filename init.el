@@ -36,8 +36,8 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; some basic settings
-(setq-default cursor-type 'bar)
-(set-cursor-color "#BE81f7")
+;; (setq-default cursor-type 'bar)
+;; (set-cursor-color "#BE81f7")
 
 ;; Fringe settings
 (fringe-mode '(8 . 0)) ;; органичиталь текста только слева
@@ -128,33 +128,7 @@
 (setq org-adapt-indentation nil)
 
             
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   (quote
-    ("2a998a3b66a0a6068bcb8b53cd3b519d230dd1527b07232e54c8b9d84061d48d" "99c86852decaeb0c6f51ce8bd46e4906a4f28ab4c5b201bdc3fdf85b24f88518" default)))
- '(display-time-mode t)
- '(elpy-rpc-python-command "/usr/local/bin/python3")
- '(elpy-syntax-check-command "/usr/local/bin/flake8")
- '(flycheck-flake8rc "~/.config/flake8")
- '(flycheck-python-flake8-executable "/usr/local/bin/flake8")
- '(graphviz-dot-dot-program "/usr/local/bin/dot")
- '(org-babel-no-eval-on-ctrl-c-ctrl-c nil)
- '(org-default-notes-file (concat org-directory "/notes.org"))
- '(org-directory "~/Dropbox/orgfiles")
- '(org-export-html-postamble nil)
- '(org-hide-leading-stars t)
- '(org-startup-folded (quote overview))
- '(org-startup-indented t)
- '(package-selected-packages
-   (quote
-    (realgud company-anaconda flymake-python-pyflakes flycheck zerodark-theme zenburn yasnippet-snippets worf whole-line-or-region which-key wgrep-ag web-mode visual-regexp-steroids virtualenvwrapper use-package undo-tree try treemacs-projectile sphinx-frontend smex smartparens smart-mode-line shell-switcher shell-pop py-autopep8 plantuml-mode paredit-everywhere ox-twbs ox-rst ox-reveal ov origami org-web-tools org-present org-pdfview org-elisp-help org-ehtml org-easy-img-insert org-download org-cliplink org-bullets org-bookmark-heading org-beautify-theme org-autolist org-ac orca neotree multiple-cursors multi-term moe-theme material-theme markdown-mode lorem-ipsum key-chord jedi irony-eldoc iedit ido-vertical-mode ido-ubiquitous hungry-delete htmlize helpful helm-projectile helm-helm-commands helm-gtags helm-delicious helm-dash helm-ag graphviz-dot-mode go-snippets go-eldoc git-timemachine git-gutter geiser expand-region ess-smart-underscore ess-R-object-popup epkg emmet-mode elpy elisp-slime-nav elfeed-org elfeed-goodies ein-mumamo dumb-jump diminish default-text-scale counsel company-jedi company-irony color-theme-modern cider chicken-scheme bug-hunter better-shell better-defaults beacon base16-theme auto-yasnippet auto-highlight-symbol auto-complete-rst auctex-latexmk atomic-chrome all-the-icons-dired alect-themes aggressive-indent)))
- '(python-shell-buffer-name "/usr/local/bin/ipython")
- '(python-shell-interpreter "/usr/local/bin/ipython3")
- '(tool-bar-mode nil))
+
 
             ;; (setq org-file-apps
   	    ;; 	(append '(
@@ -407,13 +381,24 @@
   :init
   (global-flycheck-mode t))
 
-;; Python
+;; Python settings ----------------------------------------
 
-(setq py-python-command "/usr/local/bin/ipython")
-;; (setenv "IPY_TEST_SIMPLE_PROMPT" "1")
-(setq python-shell-interpreter "/usr/local/bin/ipython3"
+;; (setq py-python-command "/usr/local/bin/ipython3") 
+;; ;; (setenv "IPY_TEST_SIMPLE_PROMPT" "1")
+
+(setq python-shell-interpreter "/usr/local/bin/python3"
       python-shell-interpreter-args "-i")
 ;;      python-shell-interpreter-args "-i")
+
+(with-eval-after-load 'python
+  (defun python-shell-completion-native-try ()
+    "Return non-nil if can trigger native completion."
+    (let ((python-shell-completion-native-enable t)
+          (python-shell-completion-native-output-timeout
+           python-shell-completion-native-try-output-timeout))
+      (python-shell-completion-native-get-completions
+       (get-buffer-process (current-buffer))
+       nil "_"))))
 
 (use-package jedi
   :ensure t
@@ -435,7 +420,7 @@
   :config
   (venv-initialize-interactive-shells)
   (venv-initialize-eshell))
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Yasnippet
 (use-package yasnippet
@@ -1363,10 +1348,49 @@ comment box."
 (add-to-list 'exec-path "/bin")
 
 
-
-	    
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; checking out realgud integration with debuggers
+;; load leuven theme
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(load-library "~/.emacs.d/elpa/realgud-20180925.10/realgud")
+(load-theme 'leuven)
+ 
 
+(require 'window-purpose)
+(purpose-mode)
+
+(add-to-list 'purpose-user-mode-purposes '(python-mode . py))
+(add-to-list 'purpose-user-mode-purposes '(inferior-python-mode . py-repl))
+(purpose-compile-user-configuration)
+
+
+(global-linum-mode)
+
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   (quote
+    ("2a998a3b66a0a6068bcb8b53cd3b519d230dd1527b07232e54c8b9d84061d48d" "99c86852decaeb0c6f51ce8bd46e4906a4f28ab4c5b201bdc3fdf85b24f88518" default)))
+ '(display-time-mode t)
+ '(elpy-rpc-python-command "/usr/local/bin/python3")
+ '(elpy-syntax-check-command "/usr/local/bin/flake8")
+ '(expand-region-preferred-python-mode (quote fgallina-python))
+ '(flycheck-flake8rc "~/.config/flake8")
+ '(flycheck-python-flake8-executable "/usr/local/bin/flake8")
+ '(graphviz-dot-dot-program "/usr/local/bin/dot")
+ '(org-babel-no-eval-on-ctrl-c-ctrl-c nil)
+ '(org-default-notes-file (concat org-directory "/notes.org"))
+ '(org-directory "~/Dropbox/orgfiles")
+ '(org-export-html-postamble nil)
+ '(org-hide-leading-stars t)
+ '(org-startup-folded (quote overview))
+ '(org-startup-indented t)
+ '(package-selected-packages
+   (quote
+    (window-purpose auto-auto-indent buffer-move indent-tools esh-autosuggest ipython-shell-send company-anaconda flymake-python-pyflakes flycheck zerodark-theme zenburn yasnippet-snippets worf whole-line-or-region which-key wgrep-ag web-mode visual-regexp-steroids virtualenvwrapper use-package undo-tree try treemacs-projectile sphinx-frontend smex smartparens smart-mode-line shell-switcher shell-pop py-autopep8 plantuml-mode paredit-everywhere ox-twbs ox-rst ox-reveal ov origami org-web-tools org-present org-pdfview org-elisp-help org-ehtml org-easy-img-insert org-download org-cliplink org-bullets org-bookmark-heading org-beautify-theme org-autolist org-ac orca neotree multiple-cursors multi-term moe-theme material-theme markdown-mode lorem-ipsum key-chord jedi irony-eldoc iedit ido-vertical-mode ido-ubiquitous hungry-delete htmlize helpful helm-projectile helm-helm-commands helm-gtags helm-delicious helm-dash helm-ag graphviz-dot-mode go-snippets go-eldoc git-timemachine git-gutter geiser expand-region ess-smart-underscore ess-R-object-popup epkg emmet-mode elpy elisp-slime-nav elfeed-org elfeed-goodies ein-mumamo dumb-jump diminish default-text-scale counsel company-jedi company-irony color-theme-modern cider chicken-scheme bug-hunter better-shell better-defaults beacon base16-theme auto-yasnippet auto-highlight-symbol auto-complete-rst auctex-latexmk atomic-chrome all-the-icons-dired alect-themes aggressive-indent)))
+ '(python-shell-buffer-name "/usr/local/bin/python3")
+ '(python-shell-interpreter "/usr/local/bin/python3")
+ '(tool-bar-mode nil)
+ '(window-divider-mode t))
