@@ -24,7 +24,7 @@
   (require 'diminish))
 ;;  (setq use-package-always-ensure t))
 
-(setq auto-fill-mode t) ;; great when you type long lines. they fold themselves
+(turn-on-auto-fill) ;; great when you type long lines. they fold themselves
 
 ;; Backup files
 (setq backup-directory-alist
