@@ -1,7 +1,7 @@
-** Some notes on using editing and running python files.
+gf** Some notes on using editing and running python files.
 1. Open the python file in an emacs buffer
 2. Press C-c C-c to invoke the python interpreter to read the file.
 3. Press C-c C-z to display the python shell in second buffer in emacs. Do your work as needed in this python shell to check data structures, classes or invoking functions.
-4. Press C-c C=z to jump back to buffer containing file.
+4. Press C-c C-z to jump back to buffer containing file.
 
 
