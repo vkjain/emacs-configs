@@ -1050,8 +1050,11 @@ directory to make multiple eshell windows easier."
 :ensure t)
 
 ;; Misc
-(setq browse-url-browser-function 'browse-url-generic
-      browse-url-generic-program "google-chrome-stable")
+;; (setq browse-url-browser-function 'browse-url-generic
+;;       browse-url-generic-program "google-chrome-stable")
+
+
+(setq browse-url-browser-function 'browse-url-default-macosx-browser)
 
 (setq auto-window-vscroll nil)
 
@@ -1178,4 +1181,50 @@ comment box."
 ;; load leuven theme
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (load-theme 'leuven)
- 
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; elfeed
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(setq elfeed-db-directory "~/Dropbox/shared/elfeeddb")
+
+(defun elfeed-mark-all-as-read()
+  (interactive)
+  (mark-whole-buffer)
+  (elfeed-search-untag-all-unread))
+
+(defun bjm/elfeed-save-db-and-bury()
+  "wrapper to save the elfeed db to disk before burying the buffer"
+  (interactive)
+  (elfeed-db-save)
+  (quit-window))
+
+(defun bjm/elfeed-load-db-and-open()
+  "Wrapper to load the elfeed db from disk before opening"
+  (interactve)
+  (elfeed-db-load)
+  (elfeed)
+  (elfeed-search-update--force))
+(use-package elfeed
+  :ensure t
+  :bind (:map elfeed-search-mode-map
+	      ("q" . bjm/elfeed-save-db-and-bury)
+	      ("Q" . bjm/elfeed-save-db-and-bury)
+	      ("j" . mz/make-and-run-elfeed-hydra)
+	      ("m" . elfeed-toggle-star)
+	      ("J" . mz/make-and-run-elfeed-hydra)
+	      ("M" . mz/elfeed-toggle-star)
+	      )
+  )
+
+(use-package elfeed-goodies
+  :ensure t
+  :config
+  (elfeed-goodies/setup))
+
+(use-package elfeed-org
+  :ensure t
+  :config
+  (elfeed-org)
+  (setq rmh-elfeed-org-files (list "~/Dropbox/shared/elfeed.org"))
+  )
