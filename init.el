@@ -109,7 +109,7 @@
 (setq hydra-examples-verbatim t)
 
 
-
+;; here we add one more comment
 
 (defun automatic-push ()
   (interactive)
@@ -119,7 +119,8 @@
 	(magit-call-git "commit" "-m" (concat current " update"))
 	(magit-call-git "push" "origin")
 	(magit-refresh)
-	(print (concat current "is pushed!!!")))))
+	(message (concat current "is pushed!!!")))))
+
 
 
 
