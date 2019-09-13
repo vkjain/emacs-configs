@@ -4,8 +4,8 @@
 ;; INSTALL PACKAGES
 ;; --------------------------------------
 ;; just entering a unwanted comment for pushing to github as a
-;; check. Please delete it as it is not meant to be saved
-;; Now I will add some more comments 
+
+
 (require 'package)
 
 (setq  package-archives
@@ -107,4 +107,21 @@
 
 
 (setq hydra-examples-verbatim t)
+
+
+
+
+(defun automatic-push ()
+  (interactive)
+(let ((current (buffer-file-name (current-buffer))))
+      (when (magit-anything-modified-p nil current)
+	(magit-call-git "add" current)
+	(magit-call-git "commit" "-m" (concat current " update"))
+	(magit-call-git "push" "origin")
+	(magit-refresh)
+	(print (concat current "is pushed!!!")))))
+
+
+
+
 
