@@ -110,8 +110,9 @@
 
 
 ;; here we add one more comment
+;; and another comment
 
-(defun automatic-push ()
+(defun init-push ()
   (interactive)
 (let ((current (buffer-file-name (current-buffer))))
       (when (magit-anything-modified-p nil current)
@@ -119,7 +120,7 @@
 	(magit-call-git "commit" "-m" (concat current " update"))
 	(magit-call-git "push" "origin")
 	(magit-refresh)
-	(message (concat current "is pushed!!!")))))
+	(message (concat current " has been  pushed!!!")))))
 
 
 
