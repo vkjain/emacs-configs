@@ -1,3 +1,4 @@
+;;;
 (require 'package)
 
 (setq package-enable-at-startup nil)
@@ -33,12 +34,15 @@
 (require 'feebleline)
 (feebleline-mode 1)
 (hide-mode-line-mode +1)
-(highlight-indent-guides-mode)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-
+(setq highlight-indentation-mode 0) ;; disable default indentation within emacs
+(add-to-list 'load-path "~/.emacs.d/elpa/indent-guide")
+(require 'indent-guide)
+(indent-guide-global-mode)
+(set-face-background 'indent-guide-face "dimgray")
 
 ;;----------------------------------------
 ;; toggle between horizontal and vertical window split
@@ -133,24 +137,7 @@
   					  ("n" "Note" entry (file+headline "~/Dropbox/orgfiles/i.org" "Note space")
           				   "* %?\n%u" :prepend t)
   					  ))
-            ;; (setq org-capture-templates
-        ;; 		    '(("a" "Appointment" entry (file  "~/Dropbox/orgfiles/gcal.org" )
-        ;; 			     "* TODO %?\n:PROPERTIES:\nDEADLINE: %^T \n\n:END:\n %i\n")
-        ;; 			    ("l" "Link" entry (file+headline "~/Dropbox/orgfiles/links.org" "Links")
-        ;; 			     "* %? %^L %^g \n%T" :prepend t)
-        ;; 			    ("b" "Blog idea" entry (file+headline "~/Dropbox/orgfiles/i.org" "Blog Topics:")
-        ;; 			     "* %?\n%T" :prepend t)
-        ;; 			    ("t" "To Do Item" entry (file+headline "~/Dropbox/orgfiles/i.org" "To Do")
-        ;; 			     "* TODO %?\n%u" :prepend t)
-        ;; 			    ("n" "Note" entry (file+headline "~/Dropbox/orgfiles/i.org" "Note space")
-        ;; 			     "* %?\n%u" :prepend t)
-
-        ;; 			    ("j" "Journal" entry (file+datetree "~/Dropbox/journal.org")
-        ;; 			     "* %?\nEntered on %U\n  %i\n  %a")
-            ;;                                ("s" "Screencast" entry (file "~/Dropbox/orgfiles/screencastnotes.org")
-            ;;                                "* %?\n%i\n")))
-
-
+  
         (defadvice org-capture-finalize 
             (after delete-capture-frame activate)  
         "Advise capture-finalize to close the frame"  
@@ -277,62 +264,26 @@
 :config
 (add-hook 'irony-mode-hook #'irony-eldoc))
 
-(defun my/python-mode-hook ()
-  (add-to-list 'company-backends 'company-jedi))
+;; (defun my/python-mode-hook ()
+;;   (add-to-list 'company-backends 'company-jedi))
 
-(add-hook 'python-mode-hook 'my/python-mode-hook)
-(use-package company-jedi
-    :ensure t
-    :config
-    (add-hook 'python-mode-hook 'jedi:setup)
-       )
+;; (add-hook 'python-mode-hook 'my/python-mode-hook)
+;; (use-package company-jedi
+;;     :ensure t
+;;     :config
+;;     (add-hook 'python-mode-hook 'jedi:setup)
+;;        )
 
-(defun my/python-mode-hook ()
-  (add-to-list 'company-backends 'company-jedi))
+;; (defun my/python-mode-hook ()
+;;   (add-to-list 'company-backends 'company-jedi))
 
-(add-hook 'python-mode-hook 'my/python-mode-hook)
+;; (add-hook 'python-mode-hook 'my/python-mode-hook)
 
 ;; company box mode
 ;(use-package company-box
 ;:ensure t
 ;  :hook (company-mode . company-box-mode)) 
 
-;; Themes and modeline
-(use-package color-theme-modern
-  :ensure t)
-
-					;(use-package zenburn-theme
-    ;  :ensure ;TODO: 
-    ;  :config (load-;TODO: heme 'zenburn t))
-
-					;(use-package spacemacs-theme
-    ;  :ensure ;TODO: 
-					;  ;:init
-					;  ;(load-theme 'spacemacs-dark t)
-					;  )
-(use-package base16-theme
-    :ensure ;TODO: 
-    )
-(use-package moe-theme
-  :ensure t)
-
-
-(use-package alect-themes
-  :ensure t)
-
-(use-package zerodark-theme
-  :ensure t)
-
-(load-theme 'zerodark t)
-(zerodark-setup-modeline-format)
-
-; (load-theme 'base16-flat t)
-;(moe-dark)
-;; (use-package powerline
-;; :ensure t
-;; :config
-;; (powerline-moe-theme)
-;; )
 
 ;; Reveal.js
 (use-package ox-reveal
@@ -345,52 +296,7 @@
 :ensure t)
 
 
-;; Flycheck
-(use-package flycheck
-  :ensure t
-  :init
-  (global-flycheck-mode t))
 
-;; Python settings ----------------------------------------
-
-;; (setq py-python-command "/usr/local/bin/ipython3") 
-;; ;; (setenv "IPY_TEST_SIMPLE_PROMPT" "1")
-
-(setq python-shell-interpreter "/usr/local/bin/ipython3"
-      python-shell-interpreter-args "-i")
-;;      python-shell-interpreter-args "-i")
-
-(with-eval-after-load 'python
-  (defun python-shell-completion-native-try ()
-    "Return non-nil if can trigger native completion."
-    (let ((python-shell-completion-native-enable t)
-          (python-shell-completion-native-output-timeout
-           python-shell-completion-native-try-output-timeout))
-      (python-shell-completion-native-get-completions
-       (get-buffer-process (current-buffer))
-       nil "_"))))
-
-(use-package jedi
-  :ensure t
-  :init
-  (add-hook 'python-mode-hook 'jedi:setup)
-  (add-hook 'python-mode-hook 'jedi:ac-setup))
-
-(use-package elpy
-  :ensure t
-  :config 
-  (elpy-enable))
-
-
-(setq elpy-rpc-python-command "/usr/local/bin/python3.7")
-
-
-(use-package virtualenvwrapper
-  :ensure t
-  :config
-  (venv-initialize-interactive-shells)
-  (venv-initialize-eshell))
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 ;; Yasnippet
@@ -407,14 +313,6 @@
   ; Highlights the current cursor line
 (global-hl-line-mode t)
   
-  ; flashes the cursor's line when you scroll
-(use-package beacon
-  :ensure ;TODO: 
-  :config
-  (beacon-mode 1)
-					; (setq beacon-color "#666600")
-  )
-
 					; deletes all the whitespace when you hit backspace or delete
 (use-package hungry-delete
   :ensure ;TODO: 
@@ -516,20 +414,11 @@ narrowed."
      (dot . t)
      (org . t)
      (shell . t )
+     (latex . t)
 ;;  ((looking-at )tex . t )
   ))
 
-;; (point)rojectile
-(use-package projectile
-  :ensure t
-  :config
-  (projectile-global-mode)
-  (setq projectile-completion-system 'ivy))
 
-  ;; (use-package counsel-projectile
-  ;;   :ensure t
-  ;;   :config
-  ;;   (counsel-projectile-on)q)
 
   (use-package smartparens
   :ensure t
@@ -591,24 +480,6 @@ narrowed."
   ))
 
   ;;--------------------------------------------
-
-
-
-
-  ;; font scaling
-  (use-package default-text-scale
-    :ensure t
-   :config
-    (global-set-key (kbd "C-M-=") 'default-text-scale-increase)
-    (global-set-key (kbd "C-M--") 'default-text-scale-decrease))
-
-
-  ;; (use-package frame-cmds :ensure t)
-  ;; (load-file "/home/zamansky/Dropbox/shared/zoom-frm.el")
-  ;; (define-key ctl-x-map [(control ?+)] 'zoom-in/out)
-  ;; (define-key ctl-x-map [(control ?-)] 'zoom-in/out)
-  ;; (define-key ctl-x-map [(control ?=)] 'zoom-in/out)
-  (define-key ctl-x-map [(control ?0)] 'zoom-in/out)
 
 ;; Hydra
   (use-package hydra 
@@ -957,12 +828,6 @@ directory to make multiple eshell windows easier."
 )
 
 
-;; personal keymap
-;; unset C- and M- digit keys
-;(dotimes (n 10)
-;  (global-unset-key (kbd (format "C-%d" n)))
-;  (global-unset-key (kbd (format "M-%d" n)))
-;  )
 
 
 (defun org-agenda-show-agenda-and-todo (&optional arg)
@@ -986,8 +851,8 @@ directory to make multiple eshell windows easier."
 (define-key z-map (kbd "w") 'z/swap-windows)
 
 
-  (setq user-full-name "Mike Zamansky"
-                          user-mail-address "mz631@hunter.cuny.edu")
+  (setq user-full-name "Vasant Jain"
+                          user-mail-address "vkj1428@gmail.com")
   ;;--------------------------------------------------------------------------
 
 
@@ -1161,7 +1026,22 @@ comment box."
 
 (setenv "PDFLATEX" "pdflatex --shell-escape")
 
+;;--------------------------------------------------
+;; tikz as default packages for Latex processing
+;;--------------------------------------------------
+(add-to-list 'org-latex-packages-alist
+	     '("" "tikz" t))
+(eval-after-load "preview"
+'(add-to-list 'preview-default-preamble
+	      "\\PreviewEnvironment{tikzpicture}" t))
 
+(setq org-latex-create-formula-image-program 'imagemagick)
+(setenv "PATH" (concat (getenv "PATH") ":/usr/local/Cellar/imagemagick/7.0.8-14/bin/"))
+(setq exec-path (append exec-path '("/usr/local/Cellar/imagemagick/7.0.8-14-0/bin/")))
+(setq auto-mode-alist
+      (append
+       '(("\\.tikz\\'" . latex-mode))
+       auto-mode-alist))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; scrolling command line history using shell via emacs
@@ -1228,3 +1108,120 @@ comment box."
   (elfeed-org)
   (setq rmh-elfeed-org-files (list "~/Dropbox/shared/elfeed.org"))
   )
+
+;;--------------------------------------------------
+;; org-ref  configuration 
+;;--------------------------------------------------
+;;(org-babel-load-file "org-ref.org")
+(require 'org-ref)
+(setq reftex-default-bibliography '("~/Dropbox/bibliography/references.bib"))
+
+;; see org-ref for use of these variables
+(setq org-ref-bibliography-notes "~/Dropbox/bibliography/notes.org"
+      org-ref-default-bibliography '("~/Dropbox/bibliography/references.bib")
+      org-ref-pdf-directory "~/Dropbox/bibliography/bibtex-pdfs/")
+
+(setq bibtex-completion-bibliography "~/Dropbox/bibliography/references.bib"
+      bibtex-completion-library-path "~/Dropbox/bibliography/bibtex-pdfs"
+      bibtex-completion-notes-path "~/Dropbox/bibliography/helm-bibtex-notes")
+
+;; open pdf with system pdf viewer (works on mac)
+(setq bibtex-completion-pdf-open-function
+  (lambda (fpath)
+    (start-process "open" "*open*" "open" fpath)))
+
+;; alternative
+;; (setq bibtex-completion-pdf-open-function 'org-open-file)
+
+(setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f"))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;--------------------------------------------------------------------------
+;; pasting png images in org-mode
+;;--------------------------------------------------------------------------
+
+(defun my/img-maker ()
+ "Make folder if not exist, define image name based on time/date" 
+  (setq myvar/img-folder-path (concat default-directory "img/"))
+
+  ; Make img folder if it doesn't exist.
+  (if (not (file-exists-p myvar/img-folder-path)) ;[ ] refactor thir and screenshot code.
+       (mkdir myvar/img-folder-path))
+
+  (setq myvar/img-name (concat "img_" (format-time-string "%Y_%m_%d__%H_%M_%S") ".png"))
+  (setq myvar/img-Abs-Path (concat myvar/img-folder-path myvar/img-name)) ;Relative to workspace.
+
+  (setq myvar/relative-filename (concat "./img/" myvar/img-name))
+  (insert "[[" myvar/relative-filename "]]" "\n")
+)
+
+(defun my/org-screenshot ()
+  "Take a screenshot into a time stamped unique-named file in the
+ sub-directory (%filenameIMG) as the org-buffer and insert a link to this file."
+  (interactive)
+  (my/img-maker)
+  ;(make-frame-invisible)
+  (lower-frame)
+  (call-process "import" nil nil nil myvar/img-Abs-Path)
+
+  (raise-frame)
+  ;(make-frame-visible)
+  (org-display-inline-images)
+  )
+
+;;--------------------------------------------------------------------------
+;; insert image from cliboard into org-file
+;;--------------------------------------------------------------------------
+(defun org-insert-clipboard-image (&optional file)
+  (interactive "F")
+  (shell-command (concat "pngpaste " file))
+  (insert (concat "[[" file "]]"))
+  (org-display-inline-images))
+
+;;--------------------------------------------------
+
+;;--------------------------------------------------
+;; drag and drop images into org files
+;;--------------------------------------------------
+
+(defun my-dnd-func (event)
+  (interactive "e")
+  (goto-char (nth 1 (event-start event)))
+  (x-focus-frame nil)
+  (let* ((payload (car (last event)))
+         (type (car payload))
+         (fname (cadr payload))
+         (img-regexp "\\(png\\|jp[e]?g\\)\\>"))
+    (cond
+     ;; insert image link
+     ((and  (eq 'drag-n-drop (car event))
+            (eq 'file type)
+            (string-match img-regexp fname))
+      (insert (format "[[%s]]" fname))
+      (org-display-inline-images t t))
+     ;; insert image link with caption
+     ((and  (eq 'C-drag-n-drop (car event))
+            (eq 'file type)
+            (string-match img-regexp fname))
+      (insert "#+ATTR_ORG: :width 300\n")
+      (insert (concat  "#+CAPTION: " (read-input "Caption: ") "\n"))
+      (insert (format "[[%s]]" fname))
+      (org-display-inline-images t t))
+     ;; C-drag-n-drop to open a file
+     ((and  (eq 'C-drag-n-drop (car event))
+            (eq 'file type))
+      (find-file fname))
+     ((and (eq 'M-drag-n-drop (car event))
+           (eq 'file type))
+      (insert (format "[[attachfile:%s]]" fname)))
+     ;; regular drag and drop on file
+     ((eq 'file type)
+      (insert (format "[[%s]]\n" fname)))
+     (t
+      (error "I am not equipped for dnd on %s" payload)))))
+
+(add-to-list 'load-path "~/.emacs.d/elpa/org-screenshot")
+(require 'org-attach-screenshot)
+
+

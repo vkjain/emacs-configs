@@ -1,3 +1,4 @@
+;;; package --- Summary
 ;; init.el --- Emacs configuration
 
 ;; INSTALL PACKAGES
@@ -5,8 +6,11 @@
 
 (require 'package)
 
-(add-to-list 'package-archives
-       '("melpa" . "http://melpa.org/packages/") t)
+(setq  package-archives
+       '(("gnu" . "http://elpa.gnu.org/packages/")
+	 ("melpa" . "http://melpa.org/packages/")
+	 ("melpa-stable" . "http://stable.melpa.org/packages/")
+	 ("org" . "http://orgmode.org/elpa/")))
 
 (package-initialize)
 (when (not package-archive-contents)
@@ -43,9 +47,9 @@
 
 
 ;;--------------------------------------------------
-;; Fringe settings 
-(fringe-mode '(8 . 0))
-(setq-default indicate-buffer-boundaries 'left)
+;; Fringe settings
+;; (fringe-mode '(8 . 0))
+;; (setq-default indicate-buffer-boundaries 'left)
 
 ;;--------------------------------------------------
 ;; Reload init.el
@@ -56,10 +60,10 @@
 
 ;;--------------------------------------------------
 ;; set keys for Apple keyboard, for emacs in OS X
-(setq mac-command-modifier 'meta) ; make cmd key do Meta
-(setq mac-option-modifier 'super) ; make opt key do Super
-(setq mac-control-modifier 'control) ; make Control key do Control
-(setq ns-function-modifier 'hyper)  ; make Fn key do Hyper
+;; (setq mac-command-modifier 'meta) ; make cmd key do Meta
+;; (setq mac-option-modifier 'super) ; make opt key do Super
+;; (setq mac-control-modifier 'control) ; make Control key do Control
+;; (setq ns-function-modifier 'hyper)  ; make Fn key do Hyper
 
 
 ;; check OS type
@@ -82,21 +86,28 @@
 
 (setq inhibit-startup-message t) ;; hide the startup message
 (load-theme 'material t) ;; load material theme
-(global-linum-mode t) ;; enable line numbers globally
+;; (global-linum-mode t) ;; enable line numbers globally
 
-;; PYTHON CONFIGURATION
-;; --------------------------------------
+;;----------------------------------------
+;; additional packages 
+(load-file "~/.emacs.d/vaslib.el")
+(load-file "~/.emacs.d/elpa/org-ref-20181214.1501/org-ref.el")
 
-(elpy-enable)
-(elpy-use-ipython)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+    (hydra zerodark-theme zenburn yasnippet-snippets worf window-purpose which-key wgrep-ag web-mode visual-regexp-steroids virtualenvwrapper use-package undo-tree try treemacs-projectile sphinx-frontend smex smartparens shell-switcher shell-pop py-autopep8 plantuml-mode paredit-everywhere paradox ox-twbs ox-rst ox-reveal ov origami org-ref org-present org-pdfview org-elisp-help org-ehtml org-easy-img-insert org-bullets org-bookmark-heading org-beautify-theme org-autolist org-ac orca neotree multiple-cursors multi-term moe-theme minions mbe material-theme markdown-mode magit lorem-ipsum jedi irony-eldoc ipython-shell-send indent-tools iedit ido-vertical-mode ido-ubiquitous hungry-delete highlight-indent-guides hide-mode-line helpful helm-projectile helm-helm-commands helm-gtags helm-delicious helm-dash helm-books helm-bibtexkey helm-ag graphviz-dot-mode go-snippets go-eldoc git-timemachine git-gutter geiser flymake-python-pyflakes flycheck feebleline expand-region ess-smart-underscore ess-R-object-popup esh-autosuggest epkg emmet-mode elpy elisp-slime-nav elfeed-org elfeed-goodies ein-mumamo dumb-jump diminish default-text-scale counsel company-jedi company-irony company-bibtex company-anaconda color-theme-modern cl-libify cider chicken-scheme bug-hunter buffer-move bibtex-utils bibslurp bibretrieve bibliothek better-shell better-defaults beacon base16-theme auto-yasnippet auto-highlight-symbol auto-complete-rst auto-auto-indent auctex-latexmk atomic-chrome all-the-icons-dired alect-themes aggressive-indent))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(aw-leading-char-face ((t (:inherit ace-jump-face-foreground :height 3.0)))))
 
-;; use flycheck not flymake with elpy
-(when (require 'flycheck nil t)
-  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-  (add-hook 'elpy-mode-hook 'flycheck-mode))
 
-;; enable autopep8 formatting on save
-(require 'py-autopep8)
-(add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
+(setq hydra-examples-verbatim t)
 
-;; init.el ends here

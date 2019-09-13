@@ -12,3 +12,5 @@ markdown-mode/*
 markdown_image_files/*
 ,cache/*
 .cask/*
+/velocity.el
+*.gitignore
