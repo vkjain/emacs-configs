@@ -5,6 +5,7 @@
 ;; --------------------------------------
 ;; just entering a unwanted comment for pushing to github as a
 ;; check. Please delete it as it is not meant to be saved
+;; Now I will add some more comments 
 (require 'package)
 
 (setq  package-archives
