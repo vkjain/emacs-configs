@@ -3,7 +3,8 @@
 
 ;; INSTALL PACKAGES
 ;; --------------------------------------
-
+;; just entering a unwanted comment for pushing to github as a
+;; check. Please delete it as it is not meant to be saved
 (require 'package)
 
 (setq  package-archives
