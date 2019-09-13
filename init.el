@@ -109,8 +109,10 @@
 (setq hydra-examples-verbatim t)
 
 
-;; here we add one more comment
-;; and another comment
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; changes to init.el updated to github repo at
+;; github.com/vkjain/emacs-configs
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun init-push ()
   (interactive)
@@ -122,7 +124,7 @@
 	(magit-refresh)
 	(message (concat current " has been  pushed!!!")))))
 
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 
