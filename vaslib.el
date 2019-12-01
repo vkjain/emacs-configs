@@ -1135,6 +1135,34 @@ comment box."
 
 (setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f"))
 
+;; doi-utils
+(require 'doi-utils)
+
+;; PDF links for org-mode
+(with-eval-after-load "pdf-tools"
+  (use-package org-pdfview
+    :config
+    ;; https://lists.gnu.org/archive/html/emacs-orgmode/2016-11/msg00169.html
+    ;; Before adding, remove it (to avoid clogging)
+    (delete '("\\.pdf\\'" . default) org-file-apps)
+    ;; https://lists.gnu.org/archive/html/emacs-orgmode/2016-11/msg00176.html
+    (add-to-list 'org-file-apps
+		 '("\\.pdf\\'" . (lambda (file link)
+				   (org-pdfview-open link))))))
+
+(defun my/org-ref-open-pdf-at-point ()
+  "Open the pdf for bibtex key under point if it exists."
+  (interactive)
+  (let* ((results (org-ref-get-bibtex-key-and-file))
+         (key (car results))
+         (pdf-file (funcall org-ref-get-pdf-filename-function key))
+     (pdf-other (bibtex-completion-find-pdf key)))
+    (cond ((file-exists-p pdf-file)
+       (org-open-file pdf-file))
+      (pdf-other
+       (org-open-file pdf-other))
+      (message "No PDF found for %s" key))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;--------------------------------------------------------------------------
@@ -1225,3 +1253,11 @@ comment box."
 (require 'org-attach-screenshot)
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; awesome-tabs
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(use-package awesome-tab
+  :load-path "~/.emacs.d/elpa/awesome-tab/"
+  :config
+  (awesome-tab-mode t)
+)

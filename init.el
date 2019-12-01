@@ -20,11 +20,7 @@
 
 (defvar myPackages
   '(better-defaults
-    ein
-    elpy
-    flycheck
-    material-theme
-    py-autopep8))
+    material-theme))
 
 (mapc #'(lambda (package)
     (unless (package-installed-p package)
@@ -47,21 +43,11 @@
 (global-set-key (kbd "<f5>") 'revert-buffer)
 (setq-default auto-fill-function 'do-auto-fill)  ;; helps to automatically wrap long lines
 
-
-;;--------------------------------------------------
-;; Fringe settings
-;; (fringe-mode '(8 . 0))
-;; (setq-default indicate-buffer-boundaries 'left)
-
-;;--------------------------------------------------
 ;; Reload init.el
 (defun vas/reload-init()
   "Reloads the init file"
   (interactive)
   (load-file "~/.emacs.d/init.el"))
-
-
-
 
 ;; check OS type
 ;; I have checked on 15Dec2018. This works fine for me
@@ -87,27 +73,11 @@
 
 ;;----------------------------------------
 ;; additional packages 
+(load-file "~/.emacs.d/elpa/org-ref/org-ref.el")
 (load-file "~/.emacs.d/vaslib.el")
-(load-file "~/.emacs.d/elpa/org-ref-20181214.1501/org-ref.el")
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (hydra zerodark-theme zenburn yasnippet-snippets worf window-purpose which-key wgrep-ag web-mode visual-regexp-steroids virtualenvwrapper use-package undo-tree try treemacs-projectile sphinx-frontend smex smartparens shell-switcher shell-pop py-autopep8 plantuml-mode paredit-everywhere paradox ox-twbs ox-rst ox-reveal ov origami org-ref org-present org-pdfview org-elisp-help org-ehtml org-easy-img-insert org-bullets org-bookmark-heading org-beautify-theme org-autolist org-ac orca neotree multiple-cursors multi-term moe-theme minions mbe material-theme markdown-mode magit lorem-ipsum jedi irony-eldoc ipython-shell-send indent-tools iedit ido-vertical-mode ido-ubiquitous hungry-delete highlight-indent-guides hide-mode-line helpful helm-projectile helm-helm-commands helm-gtags helm-delicious helm-dash helm-books helm-bibtexkey helm-ag graphviz-dot-mode go-snippets go-eldoc git-timemachine git-gutter geiser flymake-python-pyflakes flycheck feebleline expand-region ess-smart-underscore ess-R-object-popup esh-autosuggest epkg emmet-mode elpy elisp-slime-nav elfeed-org elfeed-goodies ein-mumamo dumb-jump diminish default-text-scale counsel company-jedi company-irony company-bibtex company-anaconda color-theme-modern cl-libify cider chicken-scheme bug-hunter buffer-move bibtex-utils bibslurp bibretrieve bibliothek better-shell better-defaults beacon base16-theme auto-yasnippet auto-highlight-symbol auto-complete-rst auto-auto-indent auctex-latexmk atomic-chrome all-the-icons-dired alect-themes aggressive-indent))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(aw-leading-char-face ((t (:inherit ace-jump-face-foreground :height 3.0)))))
 
 
 (setq hydra-examples-verbatim t)
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; changes to init.el updated to github repo at
@@ -126,6 +96,11 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(setq save-interprogram-paste-before-kill t)
 
-
-
+(defvar server-buffer-clients)
+(when (and (fboundp 'server-start) (string-equal (getenv "TERM") 'xterm))
+  (server-start)
+  (defun fp-kill-server-with-buffer-routine()
+    (and server-buffer-clients (server-done)))
+  (add-hook 'kill-buffer-hook 'fp-kill-server-with-buffer-routine))
