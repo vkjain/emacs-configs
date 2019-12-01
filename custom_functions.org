@@ -1,0 +1,249 @@
+* Custom functions
+** Stable
+   - Pluralize the word
+     #+BEGIN_SRC emacs-lisp
+       (defun pluralize (word count &optional plural)
+	 "Pluralize the word."
+	 (interactive)
+	 (if (= count 1)
+	     word
+	   (if (null plural)
+	       (concat word "s")
+	     plural)))
+
+       ;; (pluralize "cat" 2)
+     #+END_SRC
+
+   - Delete indentation
+     #+BEGIN_SRC emacs-lisp
+       ;;; http://emacsredux.com/blog/2013/05/30/joining-lines/
+       (defun top-join-line()
+         "Join the cunrrent line with the line beneath it"
+         (interactive)
+         (delete-indentation 1)
+         )
+       (global-set-key (kbd "M-^") 'tjoin-line)
+     #+END_SRC
+
+   - Search the web
+     #+BEGIN_SRC emacs-lisp
+       ;;; Search region on Duck.com/DuckDuckGo
+       (defun duck ()
+         "Search the selected region if any, display a query prompt otherwise."
+         (interactive)
+         (browse-url
+          (concat
+           "http://duckduckgo.com/?q="
+           (url-hexify-string (if mark-active
+                (buffer-substring (region-beginning) (region-end))
+                (read-string "Search DuckDuckGo: "))))))
+       (global-set-key (kbd "C-x g") 'duck)
+     #+END_SRC
+
+   - Search Youtube
+     #+BEGIN_SRC emacs-lisp
+       ;;; Search youtube[emacsredux.com]
+       (defun youtube ()
+         "Search YouTube with a query or region if any."
+         (interactive)
+         (browse-url
+          (concat
+           "http://www.youtube.com/results?search_query="
+           (url-hexify-string (if mark-active
+                                  (buffer-substring (region-beginning) (region-end))
+                                (read-string "Search YouTube: "))))))
+       (global-set-key (kbd "C-x y") 'youtube)
+     #+END_SRC
+
+   - Terminal
+     #+BEGIN_SRC emacs-lisp
+       ;;; Terminal at your fingerprint
+       ;;; http://emacsredux.com/blog/page/2/
+       (defun visit-term-buffer ()
+         "Create or visit a terminal buffer."
+         (interactive)
+         (if (not (get-buffer "*ansi-term*"))
+             (progn
+               (split-window-sensibly (selected-window))
+               (other-window 1)
+               (ansi-term (getenv "SHELL")))
+           (switch-to-buffer-other-window "*ansi-term*")))
+       (global-set-key (kbd "C-c t") 'visit-term-buffer)
+     #+END_SRC
+
+   - Count total number of words in current buffer
+     #+BEGIN_SRC emacs-lisp
+       ;;; Count total number of words in current buffer
+       (defun psachin/count-words-buffer ()
+	 "Count total number of words in current buffer."
+	 (let ((count 0))
+	   (save-excursion
+	     (goto-char (point-min))
+	     (while (< (point) (point-max))
+	       (forward-word 1)
+	       (setq count (1+ count))))
+	   count))
+
+       (defun psachin/show-buffer-words-count ()
+	 "Display total number of words in current buffer in the mode line."
+	 (interactive)
+	 (let ((count (psachin/count-words-buffer)))
+	   (if (zerop count)
+	       (message "Buffer has no words.")
+	     (message "Buffer approximately has %d %s." count
+		      (pluralize "word" count)))))
+
+       (global-set-key (kbd "C-x c") 'psachin/show-count-words-buffer)
+     #+END_SRC
+
+   - Calculate "time to read" the current buffer
+     #+BEGIN_SRC emacs-lisp
+       ;; Based on http://ezinearticles.com/?What-is-the-Average-Reading-Speed-and-the-Best-Rate-of-Reading?&id=2298503
+       (defun psachin/time-to-read ()
+	 "Calculate time to read the content(mins.)
+	 which is around 200 wpm."
+	 (let ((count (psachin/count-words-buffer)))
+	   (if (zerop count)
+	       (message "ERR: Cannot estimate time to read.")
+	     (setq ttr (fceiling (/ (/ count (/ 200 60.0)) 60.0))))
+	   ttr))
+     #+END_SRC
+
+   - Visit place in buffer expressed in percentage
+     #+BEGIN_SRC emacs-lisp
+       ;;; Go to place in a buffer expressed in percentage
+       (defun goto-percent (pct)
+         "Go to place in a buffer expressed in percentage."
+         (interactive "nPercent: ")
+         (goto-char (/ (* (point-max) pct) 100)))
+       (global-set-key (kbd "C-x p") 'goto-percent)
+     #+END_SRC
+
+   - Highlight comment annotations
+     #+BEGIN_SRC emacs-lisp
+       ;; Highlight Comment Annotations
+       (defun font-lock-comment-annotations ()
+         "Highlight a bunch of well known comment annotations.
+       This functions should be added to the hooks of major modes for
+       programming."
+         (font-lock-add-keywords
+          nil '(("\\<\\(FIX\\(ME\\)?\\|TODO\\|OPTIMIZE\\|HACK\\|REFACTOR\\):"
+                 1 font-lock-warning-face t))))
+       (add-hook 'prog-mode-hook 'font-lock-comment-annotations)
+     #+END_SRC
+
+   - Open current shell configuration file
+     #+BEGIN_SRC emacs-lisp
+       ;; Instant access to shell init file
+       (defun find-shell-init-file ()
+         "Edit the shell init file in another window."
+         (interactive)
+         (let* ((shell (car (reverse (split-string (getenv "SHELL") "/"))))
+                (shell-init-file (cond
+                                  ((string-equal "zsh" shell) ".zshrc")
+                                  ((string-equal "bash" shell) ".bashrc")
+                                  (t (error "Unknown shell")))))
+           (find-file-other-window (expand-file-name shell-init-file (getenv "HOME")))))
+       (global-set-key (kbd "C-c S") 'find-shell-init-file)
+     #+END_SRC
+
+   - Sort buffers
+     #+BEGIN_SRC emacs-lisp
+       ;;; Sort buffer list
+       (defun sort-buffers ()
+         "Put the buffer list in alphabetical order."
+         (called-interactively-p 'interactive)
+         (dolist (buff (buffer-list-sorted)) (bury-buffer buff))
+         (when (called-interactively-p 'any) (list-buffers)))
+       ;;(global-set-key "\M-b"    'sort-buffers)
+
+       (defun buffer-list-sorted ()
+         (sort (buffer-list)
+               (function
+                (lambda
+                  (a b) (string<
+                         (downcase (buffer-name a))
+                         (downcase (buffer-name b)))))))
+     #+END_SRC
+
+   - Screenshot frame
+     #+BEGIN_SRC emacs-lisp
+       (defun screenshot-frame ()
+         "Take screenshot.
+       Default image ~/screenshots/TIMESTAMP.png
+       Usage:
+       M-x screenshot-frame
+       Enter custom-name or RET to save image with timestamp"
+         (interactive)
+         (let* ((insert-default-directory t)
+                (screenshots-dir "~/screenshots/")
+                (sframe-name (concat (format-time-string "%d-%b-%Y-%T") ".png"))
+                (sframe-full-path
+                 (read-file-name "Screenshot name: " screenshots-dir
+                                 (concat screenshots-dir sframe-name))))
+
+           (if (not (file-accessible-directory-p screenshots-dir))
+               (make-directory-internal screenshots-dir))
+
+           (shell-command-to-string
+            (concat "import " sframe-full-path))
+           (message "Screenshot saved as %s" sframe-full-path)))
+     #+END_SRC
+
+   - Use IDO to select ERC buffers. https://www.emacswiki.org/emacs/InteractivelyDoThings#toc4
+     #+BEGIN_SRC emacs-lisp
+       (defun psachin/ido-erc-buffer()
+	 (interactive)
+	 (switch-to-buffer
+	  (ido-completing-read "Channel:"
+			       (save-excursion
+				 (delq
+				  nil
+				  (mapcar (lambda (buf)
+					    (when (buffer-live-p buf)
+					      (with-current-buffer buf
+						(and (eq major-mode 'erc-mode)
+						     (buffer-name buf)))))
+					  (buffer-list)))))))
+     #+END_SRC
+
+   - Other buffer functions
+     #+BEGIN_SRC emacs-lisp
+       (defun switch_buffer ()
+	 "switch to next window."
+	 (interactive)
+	 (other-window 1))
+     #+END_SRC
+
+     #+BEGIN_SRC emacs-lisp
+       (defun kill_buffer ()
+	 "kill THIS buffer."
+	 (interactive)
+	 (kill-buffer (buffer-name)))
+     #+END_SRC
+
+   - Turn off line number
+     #+BEGIN_SRC emacs-lisp
+       (defun psachin/turn-off-linum ()
+	 "Turn off linum for ERC buffers."
+	 (interactive)
+	 (display-line-numbers-mode 0))
+     #+END_SRC
+
+   - Create an org file in ~/notes/
+     #+BEGIN_SRC emacs-lisp
+       (defun psachin/create-notes-file ()
+	 "Create an org file in ~/notes/."
+	 (interactive)
+	 (let ((name (read-string "Filename: ")))
+	   (expand-file-name (format "%s.org" name) "~/notes/")))
+     #+END_SRC
+
+   - Create org-publish port in ~/github/psachin.gitlab.io/posts
+     #+BEGIN_SRC emacs-lisp
+       (defun psachin/create-blog-post ()
+	 "Create an org file in ~/github/psachin.gitlab.io/posts."
+	 (interactive)
+	 (let ((name (read-string "Filename: ")))
+	   (expand-file-name (format "%s.org" name) "~/github/psachin.gitlab.io/posts/")))
+     #+END_SRC

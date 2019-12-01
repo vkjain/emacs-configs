@@ -1,0 +1,108 @@
+* Time
+** Appointment customization
+   #+BEGIN_SRC emacs-lisp
+     (require 'notifications)
+
+     (defcustom appt-notification-bus :session
+       "D-Bus bus to use for notification."
+       :version "25.1"
+       :group 'appt-notification
+       :type '(choice (const :tag "Session bus" :session) string))
+
+
+     (defun psachin/appt-display (min-to-app new-time msg)
+       "Send notification."
+       (notifications-notify :bus appt-notification-bus
+			     :title (format "Appointment in %s minutes" min-to-app)
+			     :body (format "%s" msg)
+			     :replaces-id nil
+			     :app-icon nil
+			     :timeout 5000
+			     :desktop-entry "diary"))
+
+     (setq appt-disp-window-function (function psachin/appt-display))
+
+     (appt-activate t)
+     (setq-default diary-file "~/.emacs.d/diary"
+		   appt-display-format 'window
+		   appt-display-duration 60
+		   appt-audible t
+		   appt-display-interval 3
+		   appt-message-warning-time 10
+		   display-time-24hr-format t
+		   display-time-day-and-date t)
+   #+END_SRC
+
+** Todo and diary
+   #+BEGIN_SRC emacs-lisp
+     (setq todo-include-in-diary t)
+     (setq todo-always-add-time-string t)
+     (setq org-agenda-include-diary t)
+     (setq org-deadline-warning-days 3)
+   #+END_SRC
+
+** Agenda
+   - Add workflow state in org-mode
+     #+BEGIN_SRC emacs-lisp
+       (setq-default org-todo-keywords
+		     '((sequence "TODO(t)" "|" "DONE(d)")
+		       (sequence "MAYBE(m)" "|" "COMPLETED")
+		       (sequence "FIXME(f)" "|" "FIXED")
+		       (sequence "IN-PROGRESS(p)" "NEXT(n)" "WAITING(w)")
+		       (sequence "|" "CANCELED(c)")))
+     #+END_SRC
+
+   - This will create a date-time stamp for tasks marked as 'DONE'.
+     #+BEGIN_SRC emacs-lisp
+       ;; Time finished
+       (setq org-log-done 'time)
+       ;; Closing note
+       (setq org-log-done 'note)
+     #+END_SRC
+
+   - Org agenda files
+     #+BEGIN_SRC emacs-lisp
+       (setq org-agenda-files '("~/agenda/work/work.org"
+				"~/agenda/todo/read.org"
+				"~/agenda/todo/todo.org"))
+     #+END_SRC
+
+   - Capture templates
+     #+BEGIN_SRC emacs-lisp
+       ;; Notes:
+       ;; Use 'C-c c' followed by template key(t, r, n, w) to open a capture template.
+       (setq org-capture-templates
+	     '(("t" "Todo" entry
+		(file+headline "~/agenda/todo/todo.org" "Tasks")
+		"* TODO %i%?\n %U")
+	       ("r" "Read" entry
+		(file+headline "~/agenda/todo/read.org" "Reading")
+		"* TODO %i%?\n %U")
+	       ("n" "Notes" plain
+		(file psachin/create-notes-file)
+		(file "~/.emacs.d/org-templates/notes.orgcaptmpl"))
+	       ("w" "Work log" entry
+		(file+headline "~/agenda/work/work.org" "Work log")
+		"* %u%?")
+	       ("p" "Post" plain
+		(file psachin/create-blog-post)
+		(file "~/.emacs.d/org-templates/post.orgcaptmpl"))))
+
+     #+END_SRC
+
+** Notes
+   | Function              | Keys        | Description                   |
+   |-----------------------+-------------+-------------------------------|
+   | (org-todo)            | C-c C-t     |                               |
+   | (org-todo-list)       | C-c a-t     |                               |
+   | (org-schedule)        | C-c C-s     | Schedule a task               |
+   | (org-deadline)        | C-c C-d     | Schedule a task with deadline |
+   | (org-check-deadlines) | C-c / d     |                               |
+   | (org-clock-in)        | C-c C-x C-i |                               |
+   | (org-clock-out)       | C-c C-x C-o |                               |
+   | (org-clock-cancel)    | C-c C-x C-q |                               |
+   | (org-clock-goto)      | C-c C-x C-j | Jump to clocked task          |
+   | (org-clock-in-last)   | C-c C-x C-x | Restart clock                 |
+   | (org-clock-display)   | C-c C-x C-d | Display time summary          |
+   | (org-clock-report)    | C-c C-x C-r | Display tabular report        |
+   |                       | C-c C-x c   | Show column view              |

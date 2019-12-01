@@ -1,0 +1,37 @@
+* GIT Notes
+git init hello 
+ - to create a directory by name "hello" and make it git trackable
+ - > cd hello  ;; change directory
+ - > tree .git ;; you will see the objects directory
+Test by touch README  ;; empty file README
+> git add README
+> git commit -m"initial"
+- Post this you can run the below command after entering the objects directory
+  > for i in $(find . -type f | tr -d [/.]); do printf "$i\t"; git cat-file -t $i; done
+
+ - git cat-file -p <give enough SHA1 digits> 
+   - to get to know the property of file we are looking at in git objects dir
+ - git cat-file -t <give enough SHA1 digits>
+   - to get to know the type of file we are looking at in git objects dir
+   -
+* Note that git generated SHA1s are to do with content and not the filename.
+* Cloning a git managed repository to another local directory
+ - > cd /tmp
+ - > git clone --bare ~/hello ;; remember hello was our git managed dir
+ - > cd hello.git
+ - > tree . ;; you should see the exact same thing as the structure of hello dir
+ - > diff -r ~/hello/.git . ;; diff our hello.git dir with ~/hello dir
+* one more way to do it
+ - this time rm -rf ~/hello directory
+ - now we will clone our repository /tmp/hello.git as if it was remote
+ - > git clone ssh://localhost/tmp/hello.git
+ - it will come out with an error as we do not have a public/private keypair
+ - > ssh-keygen ;; we will generate one
+ - > cd .ssh
+ - you need to add the id_rsa.pub to authorized_keys file by
+ - > cat id_rsa.pub >> authorized_keys
+
+* fourth video
+ - > git clone git@github.com:jsh/hello.git
+
+Some new stuff added as comment line by me.

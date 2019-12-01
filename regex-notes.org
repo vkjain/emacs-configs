@@ -1,0 +1,176 @@
+** Notes on using regex in emacs
+
+C-M-s //isearch-forward-regexp 
+
+[[https://www.emacswiki.org/emacs/RegularExpression#regexp][Regexp notes from EmacsWiki]]
+
+
+Here is the syntax used by Emacs for regular expressions. Any character matches itself, except for the list below.
+
+The following characters are special : . * + ? ^ $ \ [
+
+Between brackets [], the following are special : ] - ^
+
+Many characters are special when they follow a backslash – see below.
+
+  .        any character (but newline)
+  *        previous character or group, repeated 0 or more time
+  +        previous character or group, repeated 1 or more time
+  ?        previous character or group, repeated 0 or 1 time
+  ^        start of line
+  $        end of line
+  [...]    any character between brackets
+  [^..]    any character not in the brackets
+  [a-z]    any character between a and z
+  \        prevents interpretation of following special char
+  \|       or
+  \w       word constituent
+  \b       word boundary
+  \sc      character with c syntax (e.g. \s- for whitespace char)
+  \( \)    start\end of group
+  \&lt; \&gt;    start\end of word (faulty rendering: backslash + less-than and backslash + greater-than)
+  \_< \_>  start\end of symbol
+  \` \'    start\end of buffer\string
+  \1       string matched by the first group
+  \n       string matched by the nth group
+  \{3\}    previous character or group, repeated 3 times
+  \{3,\}   previous character or group, repeated 3 or more times
+  \{3,6\}  previous character or group, repeated 3 to 6 times
+  \=       match succeeds if it is located at point
+*?, +?, and ?? are non-greedy versions of *, +, and ? – see NonGreedyRegexp. Also, \W, \B, and \Sc match any character that does not match \w, \b, and \sc.
+
+Characters are organized by category. Use C-u C-x = to display the category of the character under the cursor.
+
+  \ca      ascii character
+  \Ca      non-ascii character (newline included)
+  \cl      latin character
+  \cg      greek character
+Here are some syntax classes, also known as character classes, that can be used between brackets, e.g. [[:upper:]\|[:digit:]\.].
+
+  [:digit:]  a digit, same as [0-9]
+  [:alpha:]  a letter (an alphabetic character)
+  [:alnum:]  a letter or a digit (an alphanumeric character)
+  [:upper:]  a letter in uppercase
+  [:lower:]  a letter in lowercase
+  [:graph:]  a visible character
+  [:print:]  a visible character plus the space character
+  [:space:]  a whitespace character, as defined by the syntax table, but typically [ \t\r\n\v\f], which includes the newline character
+  [:blank:]  a space or tab character
+  [:xdigit:] an hexadecimal digit
+  [:cntrl:]  a control character
+  [:ascii:]  an ascii character
+Syntax classes:
+
+  \s-   whitespace character        \s/   character quote character
+  \sw   word constituent            \s$   paired delimiter         
+  \s_   symbol constituent          \s'   expression prefix        
+  \s.   punctuation character       \s<   comment starter          
+  \s(   open delimiter character    \s>   comment ender            
+  \s)   close delimiter character   \s!   generic comment delimiter
+  \s"   string quote character      \s|   generic string delimiter 
+  \s\   escape character            
+You can see the current syntax table by typing C-h s. The syntax table depends on the current mode. As expected, letters a..z are listed as word constituents in text-mode. Other word constituents in this mode include A..Z, 0..9, $, %, currency units, accented letters, kanjis. See EmacsSyntaxTable for details.
+
+
+Idiosyncrasies of Emacs Regular Expressions
+
+In an interactive search, a space character stands for one or more whitespace characters (tabs are whitespace characters). You can use M-s SPC while searching or replacing to toggle between this behavior and treating spaces as literal spaces. Or put the following in your InitFile to override this behaviour.
+                 (setq search-whitespace-regexp nil)
+[^ … ] matches all characters not in the list, even newlines. Put a newline in the list if you want it not to be matched. You can enter a newline character using ‘C-o’, ‘C-q C-j’, ‘C-q 012 RET’, or as “\n” within an Emacs Lisp string. Note also that \s- matches whitespace, sometimes including newlines, but is mode-dependent.
+Default case handling for replacing commands executes case conversion. This means that both upper and lower case match in the regexp, whereas the case in the replacement string is chosen according to the match syntax. Try for example replacing john by harry below. Case conversion can be toggled on/off by typing ‘M-c’ in the minibuffer during search. You can also set the variable case-fold-search to nil to disable case conversion; see CaseFoldSearch for more details. In the following example, only the last line would then be replaced.
+                           John  =>  Harry
+                           JOHN  =>  HARRY
+                           john  =>  harry
+ 
+Backslashes must be double-quoted when used in Lisp code. Regular expressions are often specified using strings in EmacsLisp. Some abbreviations are available: \n for newline, \t for tab, \b for backspace, \u3501 for character with unicode value 3501, and so on. Backslashes must be entered as \\. Here are two ways to replace the decimal point by a comma (e.g. 1.5 -> 1,5), first by an interactive command, second by executing Lisp code (type C-x C-e after the expression to get it executed).
+           M-x replace-regexp RET \([0-9]+\)\. RET \1, RET
+          (while (re-search-forward "\\([0-9]+\\)\\." nil t)
+                        (replace-match "\\1,"))
+The construct \d for any digit is not supported, use [0-9] or [:digit:] instead.
+
+Some Regexp Examples
+
+ [-+[:digit:]]                     digit or + or - sign
+ \(\+\|-\)?[0-9]+\(\.[0-9]+\)?     decimal number (-2 or 1.5 but not .2 or 1.)
+ \&lt;\(\w+\) +\1\&gt;                     two consecutive, identical words
+ \&lt;[[:upper:]]\w*                  word starting with an uppercase letter
+  +$                               trailing whitespaces (note the starting SPC)
+ \w\{20,\}                         word with 20 letters or more
+ \w+phony\&gt;                        word ending by phony
+ \(19\|20\)[0-9]\{2\}              year 1900-2099
+ ^.\{6,\}                          at least 6 symbols
+ ^[a-zA-Z0-9_]\{3,16\}$            decent string for a user name
+ <tag[^> C-q C-j ]*>\(.*?\)</tag>  html tag
+
+Some Emacs Commands that Use Regular Expressions
+
+ C-M-s                   incremental forward search matching regexp
+ C-M-r                   incremental backward search matching regexp 
+ replace-regexp          replace string matching regexp
+ query-replace-regexp    same, but query before each replacement
+ align-regexp            align, using strings matching regexp as delimiters
+ highlight-regexp        highlight strings matching regexp
+ occur                   show lines containing a match
+ multi-occur             show lines in all buffers containing a match
+ how-many                count the number of strings matching regexp
+ keep-lines              delete all lines except those containing matches
+ flush-lines             delete lines containing matches
+ grep                    call unix grep command and put result in a buffer
+ lgrep                   user-friendly interface to the grep command
+ rgrep                   recursive grep
+ dired-do-copy-regexp    copy files with names matching regexp
+ dired-do-rename-regexp  rename files matching regexp 
+ find-grep-dired         display files containing matches for regexp with Dired
+Note that list-matching-lines is an alias for occur and delete-matching-lines is an alias for flush-lines. The command highlight-regexp is bound to C-x w h. Also query-replace-regexp is bound by default to C-M-%, although some people prefer using an alias, like M-x qrr. Put the following in your InitFile to create such alias.
+
+   (defalias 'qrr 'query-replace-regexp)
+See also: IncrementalSearch, ReplaceRegexp, AlignCommands, OccurBuffer, DiredPower
+
+
+Tools for Constructing Regexps
+
+Command ‘re-builder’ constructs a regular expression. You enter the regexp in a small window at the bottom of the frame. The first 200 matches in the buffer are highlighted, so you can see if the regexp does what you want. Use Lisp syntax, which means doubling backslashes and using \\\\ to match a literal backslash.
+Macro ‘rx’ provides user-friendly syntax for regular expressions. For example, (rx (one-or-more blank) line-end) returns the regexp string "\\(?:[[:blank:]]+$\\)". See rx.
+SymbolicRegexp is similar in aim to ‘rx’.
+
+Study and Practice
+
+Read about regexps in the Elisp manual. See also RegexpReferences. Study EmacsLisp code that uses regexps.
+Regexp searching (‘C-M-s’) is a great way to learn about regexps – see Regexp Searches. Change your regexp on the fly and see immediately what difference the change makes.
+Some examples of use (see also ReplaceRegexp and EmacsCrashRegexp):
+Search for trailing whitespace: C-M-s SPC+$
+Highlight all trailing whitespace: M-x highlight-regexp RET SPC+$ RET RET
+Delete trailing whitespace: M-x replace-regexp RET SPC+$ RET RET (same as ‘M-x delete-trailing-whitespace’)
+Search for open delimiters: C-M-s \s(
+Search for duplicated words (works across lines): C-M-s \(\<\w+\>\)\s-+\1
+Count number of words in buffer: M-x how-many RET \< RET
+Align words beginning with an uppercase letter followed by a lowercase letter: M-: (setq case-fold-search nil) RET then M-x align-regexp RET \<[[:upper:]][[:lower:]] RET
+Replace word foo by bar (won’t replace fool by barl): M-x replace-regexp RET \<foo\> RET bar
+Keep only the first two words on each line: M-x replace-regexp RET ^\(\W*\w+\W+\w+\).* RET \1 RET
+Suppress lines beginning with ;;: M-x flush-lines RET ^;; RET
+Remove the text after the first ; on each line: M-x replace-regexp RET \([^;]*\);.* RET \1 RET
+Keep only lines that contain an email address: M-x keep-lines RET \w+\(\.\w+\)?@\(\w\|\.\)+ RET
+Keep only one instance of consecutive empty lines: M-x replace-regexp RET ^C-q C-j\{2,\} RET C-q C-j RET
+Keep words or letters in uppercase, one per line: M-x replace-regexp RET [^[:upper:]]+ RET C-o RET
+List lines beginning with Chapter or Section: M-x occur RET ^\(Chapter\|Section\) RET
+List lines with more than 80 characters: M-x occur RET ^.\{81,\} RET
+
+
+** EXAMPLES
+# replace spaces with nothing. If you place the point at start of line, you are removing empty spaces at start of lines.
+# run the following sequence of commands to record a macro
+#+BEGIN_SRC 
+
+C-x (
+C-a
+qrr \s-+ enter 
+C-n
+C-x )
+
+# you can recall this macro with 
+C-x e 'call-last-kbd-macro
+# you can give the last macro a name with 
+M-x 'name-last-kbd-macro
+M-x 'apply-macro-to-region-lines
+
+#+END_SRC

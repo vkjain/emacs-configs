@@ -1,0 +1,22 @@
+
+;; Evaluate a lisp expression in buffer using C-u C-x C-e
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+user-init-file "/Users/vasantkj/.emacs.d/init.el" ;; variable
+(find-file-other-frame user-init-file)
+
+;; (get-file-buffer user-init-file) ;; gives name of buffer having file
+;; name as ;; user-init-file
+
+
+;; ;; (current-time-string) ;; returns current time in human ;; ;; readable
+
+format (replace-regexp-in-string "data" "sun" "this ;; ;; is data used in
+
+data in sundance")
+;; ;; replaces string "data" with string "sun" in last string
+
+
+And because of this, the command C-<SPC> will set the mark and with TMM
+enabled it also activates the region highlighting when you move the point
+around.
